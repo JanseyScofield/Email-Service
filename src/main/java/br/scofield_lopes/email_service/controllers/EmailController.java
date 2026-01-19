@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.scofield_lopes.email_service.dtos.EmailDto;
 import br.scofield_lopes.email_service.dtos.ResponseSendEmailDto;
+import br.scofield_lopes.email_service.exceptions.EmailException;
 import br.scofield_lopes.email_service.services.EmailService;
 
 @RestController
@@ -22,7 +23,7 @@ public class EmailController {
 	}
 	
 	@PostMapping("send")
-	public ResponseEntity<ResponseSendEmailDto> sendEmail(@RequestBody EmailDto data){
+	public ResponseEntity<ResponseSendEmailDto> sendEmail(@RequestBody EmailDto data) throws EmailException{
 		return new ResponseEntity<ResponseSendEmailDto>(this.emailService.sendEmail(data), HttpStatus.CREATED);
 	}
 }
