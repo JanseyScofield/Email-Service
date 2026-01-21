@@ -18,7 +18,7 @@ public class EmailAMQPConfiguration {
 	 }
 
 	@Bean
-	 public ApplicationListener<ApplicationReadyEvent> inicializaAdmin(RabbitAdmin rabbitAdmin){
+	 public ApplicationListener<ApplicationReadyEvent> initAdmin(RabbitAdmin rabbitAdmin){
 		return event -> rabbitAdmin.initialize();
 	 }
 	
@@ -34,3 +34,4 @@ public class EmailAMQPConfiguration {
 		return rabbitTemplate;
 	}
 }
+
