@@ -16,4 +16,9 @@ public class GlobalExceptionHandler {
 		ResponseSendEmailDto response = new ResponseSendEmailDto(EmailStatus.ERROR, ex.getMessage());
 		return new ResponseEntity<ResponseSendEmailDto>(response, HttpStatus.BAD_REQUEST);
 	}
+	
+	@ExceptionHandler(Exception.class)
+	public ResponseEntity<String> handleInternalServerError(Exception ex){
+		return new ResponseEntity<String>("Error: " + ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+	}
 }
