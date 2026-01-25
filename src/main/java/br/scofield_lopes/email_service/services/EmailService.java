@@ -1,21 +1,36 @@
 package br.scofield_lopes.email_service.services;
 
+import java.util.List;
+
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
+import br.scofield_lopes.email_service.dtos.EmailDetailsDto;
 import br.scofield_lopes.email_service.dtos.EmailDto;
 import br.scofield_lopes.email_service.dtos.ResponseSendEmailDto;
+import br.scofield_lopes.email_service.entities.Email;
 import br.scofield_lopes.email_service.enums.EmailStatus;
 import br.scofield_lopes.email_service.exceptions.EmailException;
+import br.scofield_lopes.email_service.repositories.EmailRepository;
 
 @Service
 public class EmailService {
 	
+	private EmailRepository repository;
 	private JavaMailSender emailSender;
 	
-	public EmailService(JavaMailSender emailSender) {
+	public EmailService(EmailRepository repository, JavaMailSender emailSender) {
+		this.repository = repository;
 		this.emailSender = emailSender;
+	}
+	
+	public List<EmailDetailsDto> getAll(){
+		return repository
+				.findAll()
+				.stream()
+				.map(EmailDetailsDto::new)
+				.toList();
 	}
 	
 	public ResponseSendEmailDto sendEmail(EmailDto data) throws EmailException {
@@ -26,6 +41,8 @@ public class EmailService {
 		message.setSubject(data.mailSubject());
 		message.setText(data.mailBody());		
 		emailSender.send(message);
+		Email email = new Email(data);
+		repository.save(email);
 		return new ResponseSendEmailDto(EmailStatus.SENT, "E-mail to " + data.mailTo() + " has sent!");
 	}
 
