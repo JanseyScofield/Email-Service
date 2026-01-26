@@ -3,11 +3,8 @@ package br.scofield_lopes.email_service.entities;
 import java.time.LocalDateTime;
 
 import br.scofield_lopes.email_service.dtos.EmailDto;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import br.scofield_lopes.email_service.enums.EmailStatus;
+import jakarta.persistence.*;
 
 @Entity(name = "email_history")
 public class Email {
@@ -23,6 +20,8 @@ public class Email {
 	@Column(length = 500, nullable = false)
 	private String mailBody;
 	private LocalDateTime sendAt;
+	@Enumerated(EnumType.STRING)
+	private EmailStatus status;
 	
 	public Email() {
 		super();
@@ -82,5 +81,13 @@ public class Email {
 
 	public void setSendAt(LocalDateTime sendAt) {
 		this.sendAt = sendAt;
-	}	
+	}
+
+	public EmailStatus getStatus(){
+		return this.status;
+	}
+
+	public void setStatus(EmailStatus status){
+		this.status = status;
+	}
 }
