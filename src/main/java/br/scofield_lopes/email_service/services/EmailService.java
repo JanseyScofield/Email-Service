@@ -44,6 +44,7 @@ public class EmailService {
 		message.setText(data.mailBody());		
 		emailSender.send(message);
 		Email email = new Email(data);
+		email.setStatus(EmailStatus.SENT);
 		repository.save(email);
 		return new ResponseSendEmailDto(EmailStatus.SENT, "E-mail to " + data.mailTo() + " has sent!");
 	}
