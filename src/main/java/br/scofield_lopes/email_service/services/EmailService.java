@@ -2,8 +2,10 @@ package br.scofield_lopes.email_service.services;
 
 import java.util.List;
 
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Service;
 
 import br.scofield_lopes.email_service.dtos.EmailDetailsDto;
@@ -17,8 +19,8 @@ import br.scofield_lopes.email_service.repositories.EmailRepository;
 @Service
 public class EmailService {
 	
-	private EmailRepository repository;
-	private JavaMailSender emailSender;
+	private final EmailRepository repository;
+	private final JavaMailSender emailSender;
 	
 	public EmailService(EmailRepository repository, JavaMailSender emailSender) {
 		this.repository = repository;
@@ -26,7 +28,7 @@ public class EmailService {
 	}
 	
 	public List<EmailDetailsDto> getAll(){
-		return repository
+		return this.repository
 				.findAll()
 				.stream()
 				.map(EmailDetailsDto::new)
@@ -34,7 +36,7 @@ public class EmailService {
 	}
 	
 	public ResponseSendEmailDto sendEmail(EmailDto data) throws EmailException {
-		validateEmail(data);
+		this.validateEmail(data);
 		SimpleMailMessage message = new SimpleMailMessage();
 		message.setFrom(data.mailFrom());
 		message.setTo(data.mailTo());
@@ -44,6 +46,11 @@ public class EmailService {
 		Email email = new Email(data);
 		repository.save(email);
 		return new ResponseSendEmailDto(EmailStatus.SENT, "E-mail to " + data.mailTo() + " has sent!");
+	}
+
+	@RabbitListener(queues = "email.notification")
+	public void listenEmailQueue(@Payload EmailDto emailDto) throws EmailException{
+		this.sendEmail(emailDto);
 	}
 
 	private void validateEmail(EmailDto data) throws EmailException{
