@@ -8,10 +8,16 @@ import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.amqp.core.Queue; 
 
 @Configuration
 public class EmailAMQPConfiguration {
 
+	@Bean
+	public Queue buildQueue() {
+		return new Queue("email.notification", true);
+	}
+	
 	@Bean
 	 public RabbitAdmin createRabbitAdmin(ConnectionFactory conn) {
 		return new RabbitAdmin(conn);
