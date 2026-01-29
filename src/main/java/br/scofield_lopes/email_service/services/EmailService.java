@@ -1,5 +1,6 @@
 package br.scofield_lopes.email_service.services;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -52,6 +53,17 @@ public class EmailService {
 	@RabbitListener(queues = "email.notification")
 	public void listenEmailQueue(@Payload EmailDto emailDto) throws EmailException{
 		this.sendEmail(emailDto);
+	}
+
+	public void saveEmailError(String errorMessage){
+		Email emailError = new Email();
+		emailError.setMailBody("Error: " + errorMessage);
+		emailError.setStatus(EmailStatus.ERROR);
+		emailError.setMailSubject("Error in send email");
+		emailError.setSendAt(LocalDateTime.now());
+		emailError.setMailFrom("error");
+		emailError.setMailTo("error");
+		repository.save(emailError);
 	}
 
 	private void validateEmail(EmailDto data) throws EmailException{
